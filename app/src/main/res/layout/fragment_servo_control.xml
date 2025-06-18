@@ -98,4 +98,20 @@
         android:text="Cerrar"
         android:textColor="@color/black"
         android:backgroundTint="@color/accent" /> <!-- Light Purple background -->
+
+    <TextView
+        android:id="@+id/doorbellStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnClose"
+        android:layout_marginTop="100dp"
+        android:gravity="center"
+        android:background="#BDBDBD"
+        android:text="Nadie toca"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:padding="12dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginBottom="16dp" />
+
 </RelativeLayout>
