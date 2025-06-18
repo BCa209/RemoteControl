@@ -1,0 +1,18 @@
+<resources>
+    <!-- Base button style -->
+    <style name="CustomButtonStyle" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:background">#6200EE</item> <!-- Default background color -->
+        <item name="android:textSize">16sp</item>
+        <item name="android:paddingVertical">12dp</item>
+        <item name="android:paddingHorizontal">16dp</item>
+    </style>
+
+    <!-- Style for buttons with light background -->
+    <style name="LightButtonStyle" parent="CustomButtonStyle">
+        <item name="android:background">#FFDDFF</item> <!-- Light Purple background -->
+    </style>
+</resources>

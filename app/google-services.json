@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1065838557200",
+    "project_id": "controlr-20737",
+    "storage_bucket": "controlr-20737.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1065838557200:android:b3ac88aeb6f86f67083295",
+        "android_client_info": {
+          "package_name": "com.waoos.remotecontrol"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTrWz_LoPQdtd-qHyRCFcaQvKvSYf1rCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

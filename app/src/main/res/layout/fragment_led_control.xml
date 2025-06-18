@@ -1,0 +1,60 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@color/background">
+
+    <!-- Mostrar los detalles del dispositivo -->
+    <LinearLayout
+        android:id="@+id/deviceInfoContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="20dp">
+
+        <TextView
+            android:id="@+id/deviceName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dispositivo"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/primarydark" />
+
+        <TextView
+            android:id="@+id/deviceAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dirección MAC"
+            android:textSize="16sp"
+            android:textColor="@color/primaryLight" />
+    </LinearLayout>
+
+    <!-- Switch de encender/apagar -->
+    <Switch
+        android:id="@+id/switchControl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Encender/Apagar"
+        android:layout_centerInParent="true"
+        android:textSize="20sp"
+        android:textColor="@color/primaryprof"
+        android:thumbTint="@color/primaryLight"
+        android:trackTint="@color/primarydark" />
+
+    <!-- Icono para controlar otro LED -->
+    <ImageView
+        android:id="@+id/buzzerButton"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_empty"
+        android:contentDescription="Buzzer"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:tint="@color/secondary" />
+</RelativeLayout>

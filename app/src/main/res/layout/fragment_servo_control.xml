@@ -1,0 +1,101 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="#ECEFF1"> <!-- Background color -->
+
+    <TextView
+        android:id="@+id/deviceName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nombre del dispositivo"
+        android:textSize="18sp"
+        android:textColor="#1D3557"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/deviceAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dirección MAC"
+        android:textColor="#457B9D"
+        android:layout_below="@id/deviceName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp" />
+
+    <!-- Accent color for the thumb -->
+
+    <SeekBar
+        android:id="@+id/seekBarServo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/deviceAddress"
+        android:layout_marginTop="29dp"
+        android:progressTint="#039BE5"
+        android:thumbTint="#FF7071" />
+
+    <TextView
+        android:id="@+id/angleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/seekBarServo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:text="Ángulo: 0°"
+        android:textSize="16sp"
+        android:textColor="#808080" /> <!-- Gray text for angle display -->
+<!--
+    <LinearLayout
+        android:id="@+id/buttonContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foregroundGravity="clip_horizontal"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_below="@+id/angleTextView">
+
+        <Button
+            android:id="@+id/btnOpen10"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#6200EE"
+            android:text="Subir 10º"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/btnClose10"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#FFDDFF"
+            android:text="Bajar 10º"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+-->
+
+    <!-- Botones para abrir y cerrar hasta 100º o 0º -->
+    <Button
+        android:id="@+id/btnOpen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/angleTextView"
+        android:layout_marginTop="20dp"
+        android:text="Abrir"
+        android:textColor="@color/black"
+        android:backgroundTint="@color/colorPrimary"/> <!-- Accent color for action button -->
+
+    <Button
+        android:id="@+id/btnClose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnOpen"
+        android:layout_marginTop="8dp"
+        android:text="Cerrar"
+        android:textColor="@color/black"
+        android:backgroundTint="@color/accent" /> <!-- Light Purple background -->
+</RelativeLayout>

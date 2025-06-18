@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_led_control"
+        android:icon="@drawable/ic_led"
+        android:title="LED" />
+
+    <item
+        android:id="@+id/nav_servo_control"
+        android:icon="@drawable/ic_servo"
+        android:title="Servo" />
+
+    <item
+        android:id="@+id/nav_empty_control"
+        android:icon="@drawable/ic_empty"
+        android:title="Empty" />
+</menu>
