@@ -1,18 +1,26 @@
 package com.waoos.remotecontrol.presentation.ui
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.bluetooth.BluetoothSocket
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.SeekBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.waoos.remotecontrol.R
 import com.waoos.remotecontrol.presentation.common.ConnectedSocketManager
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ServoControlFragment : Fragment() {
 
@@ -22,10 +30,8 @@ class ServoControlFragment : Fragment() {
     private lateinit var angleTextView: TextView
     private lateinit var btnOpen: Button
     private lateinit var btnClose: Button
-    //private lateinit var btnOpen10: Button
-    //private lateinit var btnClose10: Button
     private var bluetoothSocket: BluetoothSocket? = null
-    private var currentAngle = 0 // Ángulo inicial del servomotor (en grados)
+    private var currentAngle = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -43,88 +49,125 @@ class ServoControlFragment : Fragment() {
         angleTextView = view.findViewById(R.id.angleTextView)
         btnOpen = view.findViewById(R.id.btnOpen)
         btnClose = view.findViewById(R.id.btnClose)
-        //btnOpen10 = view.findViewById(R.id.btnOpen10)
-        //btnClose10 = view.findViewById(R.id.btnClose10)
 
-        // Configurar el socket Bluetooth
         bluetoothSocket = ConnectedSocketManager.bluetoothSocket
-        // Obtener datos del dispositivo Bluetooth desde ConnectedSocketManager
-        val bluetoothSocket = ConnectedSocketManager.bluetoothSocket
-        if (bluetoothSocket != null && bluetoothSocket.isConnected) {
-            deviceNameTextView.text = bluetoothSocket.remoteDevice.name ?: "Dispositivo desconocido"
-            deviceAddressTextView.text = bluetoothSocket.remoteDevice.address ?: "Dirección MAC desconocida"
+
+        if (bluetoothSocket != null && bluetoothSocket!!.isConnected) {
+            deviceNameTextView.text = bluetoothSocket!!.remoteDevice.name ?: "Desconocido"
+            deviceAddressTextView.text = bluetoothSocket!!.remoteDevice.address ?: "-"
         } else {
             deviceNameTextView.text = "No conectado"
             deviceAddressTextView.text = "-"
         }
 
-        // Mostrar el ángulo inicial
         angleTextView.text = "Ángulo: $currentAngle°"
 
-        /* Configurar botones de subir y bajar 10 grados
-        btnOpen10.setOnClickListener {
-            if (currentAngle < 12) {
-                currentAngle += 10
-                angleTextView.text = "Ángulo: $currentAngle°"
-                sendCommand("U") // Enviar 'U' para subir el servomotor
-            }
-        }
-
-        btnClose10.setOnClickListener {
-            if (currentAngle > 0) {
-                currentAngle -= 10
-                angleTextView.text = "Ángulo: $currentAngle°"
-                sendCommand("D") // Enviar 'D' para bajar el servomotor
-            }
-        }*/
-// Configurar el cambio de SeekBar
-        seekBarServo.max = 100 // Establecer el máximo del SeekBar en 100
+        seekBarServo.max = 100
         seekBarServo.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                // Actualizar el ángulo y el TextView con el valor del SeekBar
                 currentAngle = progress
                 angleTextView.text = "Ángulo: $currentAngle°"
-                sendCommand("S$currentAngle") // Enviar el comando para actualizar el ángulo del servomotor
+                sendCommand("S$currentAngle")
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
-        // Configurar botón de abrir hasta 100º
+
         btnOpen.setOnClickListener {
             currentAngle = 100
             angleTextView.text = "Ángulo: $currentAngle°"
-            sendCommand("A") // Comando para abrir hasta 100º
+            sendCommand("A")
         }
 
-        // Configurar botón de cerrar hasta 0º
         btnClose.setOnClickListener {
             currentAngle = 0
             angleTextView.text = "Ángulo: $currentAngle°"
-            sendCommand("N") // Comando para cerrar hasta 0º
+            sendCommand("N")
         }
+
+        checkNotificationPermission()
+        createNotificationChannel()
+        listenForIncomingData()
     }
 
     private fun sendCommand(message: String) {
-        if (bluetoothSocket != null && bluetoothSocket?.isConnected == true) {
-            try {
-                bluetoothSocket?.outputStream?.write(message.toByteArray())
-            } catch (e: IOException) {
-                Toast.makeText(requireActivity(), "Error al enviar mensaje", Toast.LENGTH_SHORT).show()
+        try {
+            bluetoothSocket?.outputStream?.write(message.toByteArray())
+        } catch (e: IOException) {
+            Toast.makeText(requireContext(), "Error al enviar", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "BluetoothEvents"
+            val descriptionText = "Canal para eventos del timbre Bluetooth"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel("doorbell_channel", name, importance).apply {
+                description = descriptionText
             }
-        } else {
-            Toast.makeText(requireActivity(), "No hay conexión Bluetooth", Toast.LENGTH_SHORT).show()
+            val notificationManager: NotificationManager =
+                requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    private fun showDoorbellNotification() {
+        val time = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
+        val message = "Alguien tocó la puerta a las: $time"
+
+        val notification = NotificationCompat.Builder(requireContext(), "doorbell_channel")
+            .setSmallIcon(R.drawable.ic_notif) // Asegúrate de tener este ícono
+            .setContentTitle("Timbre Bluetooth")
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+            .build()
+
+        try {
+            NotificationManagerCompat.from(requireContext()).notify(1001, notification)
+        } catch (e: SecurityException) {
+            Toast.makeText(requireContext(), "Permiso de notificaciones denegado", Toast.LENGTH_SHORT).show()
+        }
+
     }
 
-    override fun onStart() {
-        super.onStart()
-        if (bluetoothSocket == null || bluetoothSocket?.isConnected == false) {
-            Toast.makeText(requireActivity(), "No hay conexión activa con el dispositivo", Toast.LENGTH_SHORT).show()
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                    101
+                )
+            }
         }
+    }
+
+    private fun listenForIncomingData() {
+        val inputStream = bluetoothSocket?.inputStream ?: return
+
+        Thread {
+            val buffer = ByteArray(1024)
+            var bytes: Int
+
+            while (!Thread.interrupted()) {
+                try {
+                    bytes = inputStream.read(buffer)
+                    val incomingMessage = String(buffer, 0, bytes).trim()
+
+                    if (incomingMessage.contains("z", ignoreCase = true)) {
+                        requireActivity().runOnUiThread {
+                            showDoorbellNotification()
+                        }
+                    }
+
+                } catch (e: IOException) {
+                    break
+                }
+            }
+        }.start()
     }
 }

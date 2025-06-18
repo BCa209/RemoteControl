@@ -14,7 +14,9 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.*
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -41,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bluetoothSocket: BluetoothSocket
     private lateinit var outputStream: OutputStream
 
+    private val REQUEST_NOTIFICATION_PERMISSION = 1001
     private val REQUEST_ENABLE_BT = 1
     val PERMISSION_REQUEST_CODE = 2
     val MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
@@ -87,6 +90,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         // **Llamar a la función para configurar los listeners de botones**
+        requestNotificationPermission()
         configButtonListener()
     }
 
@@ -186,6 +190,25 @@ class MainActivity : AppCompatActivity() {
                 ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
     }
 
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    REQUEST_NOTIFICATION_PERMISSION
+                )
+            }
+        }
+    }
+
+
+
+
     private fun enableBluetooth() {
         if (!bluetoothAdapter.isEnabled) {
             // Verificar si se tienen los permisos de Bluetooth
@@ -255,12 +278,21 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-                // Los permisos fueron concedidos, ahora puedes habilitar Bluetooth
-                enableBluetooth()
-            } else {
-                Toast.makeText(this, "Se necesitan permisos para continuar", Toast.LENGTH_SHORT).show()
+
+        when (requestCode) {
+            PERMISSION_REQUEST_CODE -> {
+                if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+                    enableBluetooth()
+                } else {
+                    Toast.makeText(this, "Se necesitan permisos para continuar", Toast.LENGTH_SHORT).show()
+                }
+            }
+            REQUEST_NOTIFICATION_PERMISSION -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Permiso de notificaciones concedido", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Permiso de notificaciones denegado", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
