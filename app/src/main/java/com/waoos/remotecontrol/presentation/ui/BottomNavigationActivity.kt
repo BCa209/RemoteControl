@@ -13,6 +13,13 @@ class BottomNavigationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_bottom_navigation)
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        val navigateTo = intent.getStringExtra("navigate_to")
+        if (navigateTo == "servo") {
+            // Navega al fragmento Servo directamente
+            val transaction = supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container, ServoControlFragment())  // o el fragmento correspondiente
+            transaction.commit()
+        }
 
         // Cargar el fragmento inicial
         if (savedInstanceState == null) {

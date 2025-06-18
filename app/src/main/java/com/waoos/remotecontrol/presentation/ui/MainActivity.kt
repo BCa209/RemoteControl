@@ -145,6 +145,7 @@ class MainActivity : AppCompatActivity() {
 
                         // Guardar el socket en el manejador global
                         ConnectedSocketManager.bluetoothSocket = socket
+                        ConnectedSocketManager.startListening(applicationContext)
 
                         // Navegar a ControlActivity
                         val intent = Intent(this, BottomNavigationActivity::class.java)
